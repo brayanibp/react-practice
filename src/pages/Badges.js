@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import './styles/Badges.css';
 import confLogo from '../images/badge-header.svg';
 import BadgesList from '../components/BadgesList';
+import PageLoading from '../components/PageLoading';
+import PageError from '../components/PageError';
 import api from '../api';
 
 class Badges extends React.Component {
@@ -30,15 +32,16 @@ class Badges extends React.Component {
 
   render() {
     if (this.state.loading === true) {
-      return 'Loading...'
+      return <PageLoading />;
     }
     if (this.state.error) {
-      return (
-        <div className="container">
-          <h3>Something Goes Wrong.</h3>
-          <p>{ this.state.error.message }</p>
-        </div>
-      );
+      // return (
+      //   <div className="container">
+      //     <h3>Something Goes Wrong.</h3>
+      //     <p>{ this.state.error.message }</p>
+      //   </div>
+      // );
+      return <PageError error={this.state.error} />;
     }
     if (this.state.data.length === 0) {
       return (
