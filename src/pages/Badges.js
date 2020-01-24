@@ -6,6 +6,7 @@ import confLogo from '../images/badge-header.svg';
 import BadgesList from '../components/BadgesList';
 import PageLoading from '../components/PageLoading';
 import PageError from '../components/PageError';
+import MiniLoader from '../components/MiniLoader';
 import api from '../api';
 
 class Badges extends React.Component {
@@ -17,12 +18,15 @@ class Badges extends React.Component {
 
   componentDidMount () {
     this.fetchData();
+
+    this.intervalId = setInterval(() => {
+      this.fetchData();
+    }, 5000);
   }
 
   fetchData = async ()=>{
     this.setState({ loading: true, error: null });
     try {
-      // const data = [];
       const data = await api.badges.list();
       this.setState({ loading: false, data: data });
     } catch(err) {
@@ -30,17 +34,15 @@ class Badges extends React.Component {
     }
   }
 
+  componentWillUnmount() {
+    clearInterval(this.intervalId);
+  }
+
   render() {
-    if (this.state.loading === true) {
+    if (this.state.loading === true && !this.state.data) {
       return <PageLoading />;
     }
     if (this.state.error) {
-      // return (
-      //   <div className="container">
-      //     <h3>Something Goes Wrong.</h3>
-      //     <p>{ this.state.error.message }</p>
-      //   </div>
-      // );
       return <PageError error={this.state.error} />;
     }
     if (this.state.data.length === 0) {
@@ -74,6 +76,7 @@ class Badges extends React.Component {
           </div>
 
           <BadgesList badges={this.state.data} />
+          {this.state.loading && (<MiniLoader />)}
         </div>
       </React.Fragment>
     );
